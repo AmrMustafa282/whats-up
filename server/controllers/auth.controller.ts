@@ -15,4 +15,19 @@ export const sendOTP = catchAsync(async (req: Request, res: Response) => {
  res.status(200).json({ message: "OTP sent" });
 });
 
+export const register = catchAsync(async (req: Request, res: Response) => {});
+export const login = catchAsync(async (req: Request, res: Response) => {
+ const { phone_number, otp } = req.body;
 
+ const otpCode = await redisClient.get(`otp:${phone_number}`);
+
+ if (!otpCode) {
+  return res.status(401).json({ message: "OTP expired" });
+ }
+
+ if (otpCode !== otp) {
+  return res.status(401).json({ message: "Invalid OTP" });
+ }
+
+ res.status(200).json({ message: "Login successful" });
+});
