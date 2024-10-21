@@ -24,6 +24,9 @@ export interface IUser {
  status?: string;
  last_seen?: Date;
  userPreferences?: IUserPreferences;
+ contacts?: Schema.Types.ObjectId[];
+ SignAccessToken: () => string;
+ SignRefreshToken: () => string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -33,7 +36,12 @@ const userSchema = new Schema<IUser>(
   avatar_url: String,
   status: { type: String, default: "Hey there! I am using WhatUp 😀" },
   last_seen: Date,
-  userPreferences: userPreferencesSchema,
+  userPreferences: {
+   theme: { type: String, default: "light" },
+   notifications_enabled: { type: Boolean, default: true },
+   language: { type: String, default: "en" },
+  },
+  // contacts: [{ type: Schema.ObjectId, ref: "Contact" }],
  },
  {
   timestamps: true,
@@ -42,11 +50,6 @@ const userSchema = new Schema<IUser>(
 
 userPreferencesSchema.index({ user: 1 }, { unique: true });
 
-const UserPreferences = model<IUserPreferences>(
- "UserPreferences",
- userPreferencesSchema
-);
-
 userSchema.index({ phone_number: 1 });
 
 userSchema.methods.SignAccessToken = function () {
@@ -54,6 +57,7 @@ userSchema.methods.SignAccessToken = function () {
   expiresIn: "1d",
  });
 };
+
 userSchema.methods.SignRefreshToken = function () {
  return jwt.sign({ _id: this._id }, process.env.JWT_REFRESH_TOKEN!, {
   expiresIn: "30d",

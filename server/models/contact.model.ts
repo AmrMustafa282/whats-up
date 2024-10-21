@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IUser } from "./user.model";
 
-interface IContact {
+export interface IContact {
  user: IUser;
  contact_name: string;
  contact_number: string;
@@ -9,7 +9,7 @@ interface IContact {
 
 const contactSchema = new Schema<IContact>(
  {
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+  user: { type: Schema.ObjectId, ref: "User" },
   contact_name: { type: String, required: true },
   contact_number: { type: String, required: true },
  },
@@ -18,4 +18,4 @@ const contactSchema = new Schema<IContact>(
 
 contactSchema.index({ user: 1 });
 
-export default model<IContact>("Contact", contactSchema);
+export const Contact = model<IContact>("Contact", contactSchema);

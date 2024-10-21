@@ -1,9 +1,9 @@
-import { User } from "../models/user.model";
+import * as express from "express";
 
 declare global {
  namespace Express {
   interface Request {
-   user?: userModel;
+   phone_number?: string;
   }
  }
 }
